@@ -1,10 +1,10 @@
-import { User } from '../user/user.entity';
+import { User } from '../user/entitys/user.entity';
 import { Repository, EntityRepository, getConnection } from 'typeorm';
 import { SignupDto } from './dto';
 import { RoleRepository } from '../role/role.repository';
 import { Role } from '../role/role.entity';
 import { RoleType } from '../role/roletype.enum';
-import { UserDetails } from '../user/user.details.entity';
+import { UserDetails } from '../user/entitys/user.details.entity';
 import { genSalt, hash } from 'bcryptjs';
 
 @EntityRepository(User)

@@ -6,8 +6,8 @@ import {
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDto } from './dto/user.dto';
-import { User } from './user.entity';
-import { UserDetails } from './user.details.entity';
+import { User } from './entitys/user.entity';
+import { UserDetails } from './entitys/user.details.entity';
 import { getConnection, Repository } from 'typeorm';
 import { Role } from '../role/role.entity';
 import { RoleRepository } from '../role/role.repository';
