@@ -9,6 +9,7 @@ import { genSalt, hash } from 'bcryptjs';
 
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
+  
   async signup(signupDto: SignupDto) {
     const { username, email, password } = signupDto;
     const user = new User();

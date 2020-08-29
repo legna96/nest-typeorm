@@ -37,7 +37,7 @@ export class UserController {
   @Post()
   @Roles('ADMINISTRATOR')
   @UseGuards(AuthGuard(), RoleGuard)
-  async createUser(@Body() user: User): Promise<User> {
+  async createUser(@Body() user: UserDto): Promise<User> {
     const createdUser = await this._userService.create(user);
     return createdUser;
   }
