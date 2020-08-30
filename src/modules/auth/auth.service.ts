@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthRepository } from './auth.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +13,7 @@ import { User } from '../user/entitys/user.entity';
 import { compare } from 'bcryptjs';
 import { IJwtPayload } from './jwt-payload.interface';
 import { RoleType } from '../role/roletype.enum';
+import { throwError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +23,7 @@ export class AuthService {
     private readonly _jwtService: JwtService,
   ) {}
 
-  async signup(signupDto: SignupDto): Promise<void> {
+  async signup(signupDto: SignupDto): Promise<User> {
     const { username, email } = signupDto;
     const userExists = await this._authRepository.findOne({
       where: [{ username }, { email }],
@@ -30,16 +32,35 @@ export class AuthService {
     if (userExists) {
       throw new ConflictException('username or email already exists');
     }
-
-    return this._authRepository.signup(signupDto);
+    const newUser = await this._authRepository.signup(signupDto);
+    return  newUser;
   }
 
-  async signin(signinDto: SigninDto): Promise<{ token: string }> {
-    const { username, password } = signinDto;
+  async signin(signinDto: SigninDto): Promise<string> {
+    const { username, password, email } = signinDto;
+    let user: User;
 
-    const user: User = await this._authRepository.findOne({
-      where: { username },
-    });
+    if (username && email) {
+      user = await this._authRepository.findOne({
+        where: { email },
+      });
+    }
+
+    else if (username) {
+      user = await this._authRepository.findOne({
+        where: { username },
+      });
+    }
+
+    else if(email) {
+      user = await this._authRepository.findOne({
+        where: { email },
+      });
+    }
+    
+    else {
+      throw new BadRequestException('username or email is required');
+    }
 
     if (!user) {
       throw new NotFoundException('user does not exist');
@@ -58,8 +79,8 @@ export class AuthService {
       roles: user.roles.map(r => r.name as RoleType)
     };
 
-    const token = await this._jwtService.sign(payload);
+    const token: string = await this._jwtService.sign(payload);
 
-    return { token };
+    return token;
   }
 }
