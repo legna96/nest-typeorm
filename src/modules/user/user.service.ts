@@ -9,9 +9,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entitys/user.entity';
 import { UserDetails } from './entitys/user.details.entity';
 import { RoleRepository } from '../role/role.repository';
-import { status } from '../../shared/entity-status.num';
 import { genSalt, hash } from 'bcryptjs';
 import { UserDto } from './dto/user.dto';
+import { Configuration } from 'src/config/config.keys';
 
 @Injectable()
 export class UserService {
@@ -28,7 +28,7 @@ export class UserService {
     }
 
     const user: User = await this._userRepository.findOne(id, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!user) {
@@ -40,7 +40,7 @@ export class UserService {
 
   async getAll(): Promise<User[]> {
     const users: User[] = await this._userRepository.find({
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     return users;
@@ -72,19 +72,19 @@ export class UserService {
 
   async delete(id: number): Promise<void> {
     const userExist = await this._userRepository.findOne(id, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!userExist) {
       throw new NotFoundException();
     }
 
-    await this._userRepository.update(id, { status: 'INACTIVE' });
+    await this._userRepository.update(id, { status: Configuration.INACTIVE });
   }
 
   async setRoleToUser(userId: number, roleId: number) {
     const userExist = await this._userRepository.findOne(userId, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!userExist) {
@@ -92,7 +92,7 @@ export class UserService {
     }
 
     const roleExist = await this._roleRepository.findOne(roleId, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!roleExist) {
