@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
-import { User } from './user.entity';
+import { User } from './entitys/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../role/decorators/role.decorator';
 import { RoleGuard } from '../role/guards/role.guard';
@@ -37,7 +37,7 @@ export class UserController {
   @Post()
   @Roles('ADMINISTRATOR')
   @UseGuards(AuthGuard(), RoleGuard)
-  async createUser(@Body() user: User): Promise<User> {
+  async createUser(@Body() user: UserDto): Promise<User> {
     const createdUser = await this._userService.create(user);
     return createdUser;
   }

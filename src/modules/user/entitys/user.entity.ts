@@ -11,7 +11,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { UserDetails } from './user.details.entity';
-import { Role } from '../role/role.entity';
+import { Role } from '../../role/role.entity';
 
 @Entity('users')
 export class User extends BaseEntity {

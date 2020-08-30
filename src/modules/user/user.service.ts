@@ -2,16 +2,16 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserDto } from './dto/user.dto';
-import { User } from './user.entity';
-import { UserDetails } from './user.details.entity';
-import { getConnection, Repository } from 'typeorm';
-import { Role } from '../role/role.entity';
+import { User } from './entitys/user.entity';
+import { UserDetails } from './entitys/user.details.entity';
 import { RoleRepository } from '../role/role.repository';
-import { status } from '../../shared/entity-status.num';
+import { genSalt, hash } from 'bcryptjs';
+import { UserDto } from './dto/user.dto';
+import { Configuration } from 'src/config/config.keys';
 
 @Injectable()
 export class UserService {
@@ -28,7 +28,7 @@ export class UserService {
     }
 
     const user: User = await this._userRepository.findOne(id, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!user) {
@@ -40,22 +40,30 @@ export class UserService {
 
   async getAll(): Promise<User[]> {
     const users: User[] = await this._userRepository.find({
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     return users;
   }
 
-  async create(user: User): Promise<User> {
+  async create(userjson: UserDto): Promise<User> {
+    const { email, password, username } = userjson;
+    const userExists = await this._userRepository.findOne({
+      where: [{ username }, { email }],
+    });
+    if (userExists) {
+      throw new ConflictException('username or email already exists');
+    }
+    const user = new User();
+    const salt = await genSalt(10);
     const details = new UserDetails();
+    const defaultRole = await this._roleRepository.findOne({ where: { name: 'GENERAL' } });
+    user.email = email;
+    user.username = username;
+    user.password = await hash(password, salt);
     user.details = details;
-
-    const repo = await getConnection().getRepository(Role);
-    const defaultRole = await repo.findOne({ where: { name: 'GENERAL' } });
     user.roles = [defaultRole];
-
-    const savedUser: User = await this._userRepository.save(user);
-    return savedUser;
+    return await user.save();
   }
 
   async update(id: number, user: User): Promise<void> {
@@ -64,19 +72,19 @@ export class UserService {
 
   async delete(id: number): Promise<void> {
     const userExist = await this._userRepository.findOne(id, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!userExist) {
       throw new NotFoundException();
     }
 
-    await this._userRepository.update(id, { status: 'INACTIVE' });
+    await this._userRepository.update(id, { status: Configuration.INACTIVE });
   }
 
   async setRoleToUser(userId: number, roleId: number) {
     const userExist = await this._userRepository.findOne(userId, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!userExist) {
@@ -84,7 +92,7 @@ export class UserService {
     }
 
     const roleExist = await this._roleRepository.findOne(roleId, {
-      where: { status: status.ACTIVE },
+      where: { status: Configuration.ACTIVE },
     });
 
     if (!roleExist) {
