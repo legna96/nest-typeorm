@@ -8,59 +8,110 @@ import {
   ParseIntPipe,
   UseGuards,
   Put,
+  Res,
+  HttpStatus,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserDto } from './dto/user.dto';
-import { User } from './entitys/user.entity';
+import { UserCreateJson } from './jsons/user.createJson';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../role/decorators/role.decorator';
 import { RoleGuard } from '../role/guards/role.guard';
+import { Configuration } from 'src/config/config.keys';
+import { Response } from 'express';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly _userService: UserService) {}
 
-  @Get(':id')
-  @UseGuards(AuthGuard())
-  async getUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    const user = await this._userService.get(id);
-    return user;
+  /**
+    * obtiene usuario por id con estado activo
+    * @param id 
+    * @param res 
+    */
+  @Get(':username')
+  async getUserById (
+    @Param('username', ParseIntPipe) username: string,
+    @Res() res: Response
+    ) {
+    const user = await this._userService.get(username, Configuration.ACTIVE);
+    return res.status(HttpStatus.OK).json({
+      user
+    });
   }
-  
+   
+   /**
+    * obtiene usuario por username y status
+    * @param username 
+    * @param status 
+    * @param res 
+    */
+   @Get('/:username/status/:status')
+   async getUserByIdAndStatus(
+     @Param('username') username: string, 
+     @Param('status') status: string,
+     @Res() res: Response ) {
+       const user = await this._userService.get(username, status);
+       return res.status(HttpStatus.OK).json({
+         user
+       });
+   }
+
+   /**
+    * obtiene todos los usuarios con estado activo 
+    * @param res 
+    */
   @Get()
-  @UseGuards(AuthGuard())
-  async getUsers(): Promise<User[]> {
-    const users = await this._userService.getAll();
-    return users;
+  async getUsers(@Res() res: Response) {
+    const users = await this._userService.getAll(Configuration.ACTIVE);
+    return res.status(HttpStatus.OK).json({
+      users,
+      total: users.length
+    });
+  }
+
+  
+  /**
+   * obtiene todos los usuarios por status
+   * @param status 
+   * @param res 
+   */
+  @Get('/status/:status')
+  @UseGuards(AuthGuard(), RoleGuard)
+  async getUsersByStatus(
+    @Param('status') status: string,
+    @Res() res: Response ) {
+      const users = await this._userService.getAll(status);
+      return res.status(HttpStatus.OK).json({
+        users,
+        total: users.length
+      }) 
   }
   
+  /**
+   * Crea un nuevo Usuario
+   * @param user 
+   * @param res 
+   */
   @Post()
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
-  async createUser(@Body() user: UserDto): Promise<User> {
-    const createdUser = await this._userService.create(user);
-    return createdUser;
+  @UsePipes(ValidationPipe)
+  async createUser(
+    @Body() user: UserCreateJson,
+    @Res() res: Response ) {
+    const newUser = await this._userService.create(user);
+    return res.status(HttpStatus.CREATED).json({
+      newUser
+    }) 
   }
 
-  @Put(':id')
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
-  async updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: User) {
-    const updatedUser = await this._userService.update(id, user);
-    return true;
-  }
-
-  @Delete(':id')
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
-  async deleteUser(@Param('id', ParseIntPipe) id: number) {
-    await this._userService.delete(id);
-    return true;
-  }
+  // @Delete(':id')
+  // async deleteUser(@Param('id', ParseIntPipe) id: number) {
+  //   await this._userService.delete(id);
+  //   return true;
+  // }
 
   @Post('setRole/:userId/:roleId')
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
   async setRoleToUser(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('roleId', ParseIntPipe) roleId: number,

@@ -84,8 +84,8 @@ export class RoleController {
    * @param res 
    */
   @Get('/status/:status')
-  @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  // @Roles(RoleType.ADMINISTRADOR)
+  // @UseGuards(AuthGuard(), RoleGuard)
   async getAllRolesAndStatus(
     @Param('status') status: string,
     @Res() res: Response ) {
@@ -102,8 +102,8 @@ export class RoleController {
    * @param res 
    */
   @Post()
-  @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  // @Roles(RoleType.ADMINISTRADOR)
+  // @UseGuards(AuthGuard(), RoleGuard)
   @UsePipes(ValidationPipe)
   async createRole(
     @Body() roleJson: RoleCreateJson,

@@ -1,7 +1,6 @@
 import {
   BaseEntity,
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   OneToOne,
   JoinColumn,
@@ -9,16 +8,15 @@ import {
   ManyToMany,
   UpdateDateColumn,
   CreateDateColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { UserDetails } from './user.details.entity';
 import { Role } from '../../role/role.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
-  @Column({ type: 'varchar', unique: true, length: 25, nullable: false })
+  
+  @PrimaryColumn({ type: 'varchar', length: 25 })
   username: string;
 
   @Column({ type: 'varchar', nullable: false })

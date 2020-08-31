@@ -29,9 +29,10 @@ export class AuthController {
   async signin(
     @Body() signinDto: SigninDto,
     @Res() res: Response ) {
-      const token = await this._authService.signin(signinDto);
+      const {token,payload} = await this._authService.signin(signinDto);
       return res.status(HttpStatus.OK).json({
-        token
+        token,
+        user: payload
       });
   }
 }

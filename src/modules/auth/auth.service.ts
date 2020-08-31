@@ -14,6 +14,7 @@ import { compare } from 'bcryptjs';
 import { IJwtPayload } from './jwt-payload.interface';
 import { RoleType } from '../role/roletype.enum';
 import { throwError } from 'rxjs';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +37,7 @@ export class AuthService {
     return  newUser;
   }
 
-  async signin(signinDto: SigninDto): Promise<string> {
+  async signin(signinDto: SigninDto): Promise<{token: string, payload: object}> {
     const { username, password, email } = signinDto;
     let user: User;
 
@@ -73,14 +74,14 @@ export class AuthService {
     }
 
     const payload: IJwtPayload = {
-      id: user.id,
       email: user.email,
       username: user.username,
-      roles: user.roles.map(r => r.name as RoleType)
+      roles: user.roles.map(r => r.name as RoleType),
+      details: {...user.details}
     };
 
     const token: string = await this._jwtService.sign(payload);
 
-    return token;
+    return { token, payload };
   }
 }

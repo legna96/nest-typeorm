@@ -17,13 +17,4 @@ export class UserDetails extends BaseEntity {
 
   @Column({ type: 'varchar', nullable: true })
   lastname: string;
-
-  @Column({ type: 'varchar', default: 'ACTIVE', length: 8 })
-  status: string;
-
-  @CreateDateColumn({ type: 'timestamp', name: 'created_at', nullable: true })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamp', name: 'updated_at', nullable: true })
-  updatedAt: Date;
 }
