@@ -20,6 +20,7 @@ import { Roles } from '../role/decorators/role.decorator';
 import { RoleGuard } from '../role/guards/role.guard';
 import { Configuration } from 'src/config/config.keys';
 import { Response } from 'express';
+import { RoleType } from '../role/roletype.enum';
 
 @Controller('users')
 export class UserController {
@@ -31,6 +32,8 @@ export class UserController {
     * @param res 
     */
   @Get(':id')
+  @Roles(RoleType.GENERAL)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getUserById (
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response
@@ -48,6 +51,8 @@ export class UserController {
     * @param res 
     */
    @Get('/:id/status/:status')
+   @Roles(RoleType.GENERAL)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
    async getUserByIdAndStatus(
      @Param('id', ParseIntPipe) id: number, 
      @Param('status') status: string,
@@ -63,6 +68,8 @@ export class UserController {
     * @param res 
     */
   @Get()
+  @Roles(RoleType.GENERAL)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getUsers(@Res() res: Response) {
     const users = await this._userService.getAll(Configuration.ACTIVE);
     return res.status(HttpStatus.OK).json({
@@ -78,6 +85,8 @@ export class UserController {
    * @param res 
    */
   @Get('/status/:status')
+  @Roles(RoleType.GENERAL)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getUsersByStatus(
     @Param('status') status: string,
     @Res() res: Response ) {
@@ -94,6 +103,8 @@ export class UserController {
    * @param res 
    */
   @Post()
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   @UsePipes(ValidationPipe)
   async createUser(
     @Body() user: UserCreateJson,
@@ -111,6 +122,8 @@ export class UserController {
    * @param res 
    */
   @Put(':id')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() userUpdateJson: UserUpdateJson,
@@ -129,6 +142,8 @@ export class UserController {
    * @param res 
    */
   @Put('/email/:id')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   @UsePipes(ValidationPipe)
   async updateUserEmail(
     @Param('id', ParseIntPipe) id: number,
@@ -148,6 +163,8 @@ export class UserController {
    * @param res 
    */
   @Put('/restart/password')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   @UsePipes(ValidationPipe)
   async restarPassword (
     @Body() restartPasswordJson: RestartPasswordJson,
@@ -167,6 +184,8 @@ export class UserController {
    * @param res 
    */
   @Put('/profile/:id')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async updateProfile (
     @Param('id', ParseIntPipe) id: number,
     @Body() profileUpdateJson: ProfileUpdateJson,
@@ -183,6 +202,8 @@ export class UserController {
    * @param id 
    */
   @Delete(':id')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async deleteRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response ) {
@@ -198,6 +219,8 @@ export class UserController {
    * @param id 
    */
   @Delete('/drop/:id')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async dropRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response) {
@@ -215,6 +238,8 @@ export class UserController {
    * @param res 
    */
   @Post('setRole/:userId/:roleId')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async setRoleToUser(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('roleId', ParseIntPipe) roleId: number,
@@ -234,6 +259,8 @@ export class UserController {
    * @param res 
    */
   @Post('unsetRole/:userId/:roleId')
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async unsetRoleToUser(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('roleId', ParseIntPipe) roleId: number,

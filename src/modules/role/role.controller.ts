@@ -33,7 +33,7 @@ export class RoleController {
     */
   @Get(':id')
   @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getByIdRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response
@@ -52,7 +52,7 @@ export class RoleController {
    */
   @Get('/:id/status/:status')
   @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getByIdRoleAndStatus(
     @Param('id', ParseIntPipe) id: number, 
     @Param('status') status: string,
@@ -69,7 +69,7 @@ export class RoleController {
    */
   @Get()
   @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getAllRoles(@Res() res: Response) {
     const roles = await this._roleService.getAll(Configuration.ACTIVE);
     return res.status(HttpStatus.OK).json({
@@ -84,8 +84,8 @@ export class RoleController {
    * @param res 
    */
   @Get('/status/:status')
-  // @Roles(RoleType.ADMINISTRADOR)
-  // @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getAllRolesAndStatus(
     @Param('status') status: string,
     @Res() res: Response ) {
@@ -102,8 +102,8 @@ export class RoleController {
    * @param res 
    */
   @Post()
-  // @Roles(RoleType.ADMINISTRADOR)
-  // @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   @UsePipes(ValidationPipe)
   async createRole(
     @Body() roleJson: RoleCreateJson,
@@ -123,7 +123,7 @@ export class RoleController {
    */
   @Put(':id')
   @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async updateRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() roleJson: RoleUpdateJson,
@@ -140,7 +140,7 @@ export class RoleController {
    */
   @Delete(':id')
   @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async deleteRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response ) {
@@ -156,8 +156,8 @@ export class RoleController {
    * @param id 
    */
   @Delete('/drop/:id')
-  // @Roles(RoleType.ADMINISTRADOR)
-  // @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async dropRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response) {
