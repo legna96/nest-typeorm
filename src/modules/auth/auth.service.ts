@@ -23,6 +23,10 @@ export class AuthService {
     private readonly _jwtService: JwtService,
   ) {}
 
+  /**
+   * Registro
+   * @param signupDto 
+   */
   async signup(signupDto: SignupDto): Promise<User> {
     const { username, email } = signupDto;
     const userExists = await this._authRepository.findOne({
@@ -36,6 +40,10 @@ export class AuthService {
     return  newUser;
   }
 
+  /**
+   * Login con email ó username y password bcrypt
+   * @param signinDto 
+   */
   async signin(signinDto: SigninDto): Promise<{token: string, payload: object}> {
     const { username, password, email } = signinDto;
     let user: User;
@@ -72,7 +80,7 @@ export class AuthService {
       throw new UnauthorizedException('invalid credentials');
     }
 
-    // si las credenciales son las correctas y la cuenta esta inactiva, se reactiva la cuenta
+    // reactivacion de la cuenta
     if (user.status === Configuration.INACTIVE) {
       user.status = Configuration.ACTIVE;
       await this._authRepository.save(user);

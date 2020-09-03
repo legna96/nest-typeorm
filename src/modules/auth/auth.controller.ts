@@ -8,7 +8,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { SignupDto, SigninDto } from './dto';
-import { throws } from 'assert';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 
@@ -16,6 +15,11 @@ import { Response } from 'express';
 export class AuthController {
   constructor(private readonly _authService: AuthService) {}
 
+  /**
+   * registrar
+   * @param signupDto 
+   * @param res 
+   */
   @Post('/signup')
   @UsePipes(ValidationPipe)
   async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
@@ -25,6 +29,11 @@ export class AuthController {
     });
   }
 
+  /**
+   * Login
+   * @param signinDto 
+   * @param res 
+   */
   @Post('/signin')
   async signin(
     @Body() signinDto: SigninDto,

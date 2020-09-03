@@ -27,6 +27,11 @@ export class UserService {
     private readonly _userDetailRepository: UserDetailsRepository,
   ) {}
 
+  /**
+   * obtiene un usuario por id y status
+   * @param id 
+   * @param status 
+   */
   async get(id: number, status: string): Promise<User> {
     
     if (!id || !status) {
@@ -48,6 +53,10 @@ export class UserService {
     return user;
   }
 
+  /**
+   * obtiene todos los usuarios por status
+   * @param status 
+   */
   async getAll(status: string): Promise<User[]> {
 
     if (!status) {
@@ -65,6 +74,11 @@ export class UserService {
     return users;
   }
 
+  /**
+   * crea un nuevo usuario con rol general por defecto
+   * y password bcrypt
+   * @param userjson 
+   */
   async create(userjson: UserCreateJson): Promise<User> {
     
     const { email, password, username } = userjson;
@@ -89,6 +103,11 @@ export class UserService {
     return await user.save();
   }
 
+  /**
+   * actualiza campo ó cuerpo (username, status) del usuario
+   * @param userUpdateJson 
+   * @param id 
+   */
   async update(userUpdateJson: UserUpdateJson, id: number): Promise<User> {
 
     userUpdateJson = Utils.OnlyRequestFields(userUpdateJson, ["username", "status"]);
@@ -116,7 +135,11 @@ export class UserService {
     return userExists
   }
 
-
+  /**
+   * Actualiza el email de un usuario activo
+   * @param emailUpdateJson 
+   * @param id 
+   */
   async updateEmail(emailUpdateJson: EmailUpdateJson, id: number): Promise<User> {
   
     const {email} = emailUpdateJson;
@@ -149,6 +172,11 @@ export class UserService {
     return userExists
   }
 
+  /**
+   * actualiza password de usuario en cualquier status
+   * dado un email y lo setea a activo al usuario
+   * @param restartJson 
+   */
   async restartPassword(restartJson: RestartPasswordJson): Promise<User> {
   
     const {email, newPassword} = restartJson;
@@ -170,6 +198,12 @@ export class UserService {
     return userEmailExists
   }
 
+  /**
+   * Actualiza datalles de usuario
+   * dado un id de usuario
+   * @param profileUpdateJson 
+   * @param id 
+   */
   async updateProfile(profileUpdateJson: ProfileUpdateJson, id: number): Promise<User> {
     
     profileUpdateJson = Utils.OnlyRequestFields(profileUpdateJson, ["name", "lastname"]);
@@ -220,6 +254,12 @@ export class UserService {
     await this._userDetailRepository.delete(id);
   }
 
+  /**
+   * agrega el rol por parametro 
+   * a los roles que dispone el usuario  
+   * @param userId 
+   * @param roleId 
+   */
   async setRoleToUser(userId: number, roleId: number): Promise<User> {
     const userExist = await this._userRepository.findOne(userId, {
       where: { status: Configuration.ACTIVE },
@@ -247,6 +287,12 @@ export class UserService {
     return userExist;
   }
 
+  /**
+   * quita el rol por parametro 
+   * de los roles que dispone el usuario 
+   * @param userId 
+   * @param roleId 
+   */
   async unsetRoleToUser(userId: number, roleId: number): Promise<User> {
     const userExist = await this._userRepository.findOne(userId, {
       where: { status: Configuration.ACTIVE },

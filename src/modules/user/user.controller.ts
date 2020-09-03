@@ -104,6 +104,12 @@ export class UserController {
     }) 
   }
 
+  /**
+   * actualiza usuario
+   * @param id 
+   * @param userUpdateJson 
+   * @param res 
+   */
   @Put(':id')
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
@@ -116,6 +122,12 @@ export class UserController {
     })
   }
 
+  /**
+   * actualiza el email del usuario
+   * @param id 
+   * @param emailUpdateJson 
+   * @param res 
+   */
   @Put('/email/:id')
   @UsePipes(ValidationPipe)
   async updateUserEmail(
@@ -129,6 +141,12 @@ export class UserController {
     })
   }
 
+  /**
+   * actualiza el password del usuario
+   * dado un email
+   * @param restartPasswordJson 
+   * @param res 
+   */
   @Put('/restart/password')
   @UsePipes(ValidationPipe)
   async restarPassword (
@@ -141,6 +159,13 @@ export class UserController {
     });
   }
   
+  /**
+   * actualiza campo ó cuerpo completo
+   * en los detalles del usuario
+   * @param id 
+   * @param profileUpdateJson 
+   * @param res 
+   */
   @Put('/profile/:id')
   async updateProfile (
     @Param('id', ParseIntPipe) id: number,
@@ -182,6 +207,13 @@ export class UserController {
     });
   }
 
+  /**
+   * agrega el rol por parametro 
+   * a los roles que dispone el usuario  
+   * @param userId 
+   * @param roleId 
+   * @param res 
+   */
   @Post('setRole/:userId/:roleId')
   async setRoleToUser(
     @Param('userId', ParseIntPipe) userId: number,
@@ -194,6 +226,13 @@ export class UserController {
     })
   }
 
+  /**
+   * quita el rol por parametro 
+   * de los roles que dispone el usuario 
+   * @param userId 
+   * @param roleId 
+   * @param res 
+   */
   @Post('unsetRole/:userId/:roleId')
   async unsetRoleToUser(
     @Param('userId', ParseIntPipe) userId: number,
