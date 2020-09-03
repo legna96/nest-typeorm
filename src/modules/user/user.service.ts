@@ -199,6 +199,26 @@ export class UserService {
     return userExists
   }
 
+  /**
+   * Elimina en memoria el usuario
+   * correspondiente al id mandado
+   * @param id 
+   */
+  async delete(id: number): Promise<void> {
+
+    if (!id) {
+      throw new BadRequestException('all params must be sent');
+    }
+
+    const userExists = await this._userRepository.findOne(id);
+
+    if (!userExists) {
+      throw new NotFoundException(`user with id=${id} not exists`);
+    }
+
+    await this._userRepository.delete(id);
+  }
+
   async setRoleToUser(userId: number, roleId: number): Promise<User> {
     const userExist = await this._userRepository.findOne(userId, {
       where: { status: Configuration.ACTIVE },

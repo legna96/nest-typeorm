@@ -154,11 +154,34 @@ export class UserController {
     });
   }
 
-  // @Delete(':id')
-  // async deleteUser(@Param('id', ParseIntPipe) id: number) {
-  //   await this._userService.delete(id);
-  //   return true;
-  // }
+   /**
+   * Cambia el estado del usuario a INACTIVO
+   * @param id 
+   */
+  @Delete(':id')
+  async deleteRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response ) {
+      const usuarioJson = {status: Configuration.INACTIVE, username: null};
+      const updateUser = await this._userService.update(usuarioJson, id);
+      return res.status(HttpStatus.OK).json({
+        updateUser
+      })
+  }
+  
+  /**
+   * Elimina en memoria el usuario pasado por id
+   * @param id 
+   */
+  @Delete('/drop/:id')
+  async dropRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response) {
+    await this._userService.delete(id);
+    return res.status(HttpStatus.OK).json({
+      deleted: true
+    });
+  }
 
   @Post('setRole/:userId/:roleId')
   async setRoleToUser(
