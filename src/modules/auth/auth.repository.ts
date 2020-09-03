@@ -10,7 +10,7 @@ import { genSalt, hash } from 'bcryptjs';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
   
-  async signup(signupDto: SignupDto) {
+  async signup(signupDto: SignupDto): Promise<User> {
     const { username, email, password } = signupDto;
     const user = new User();
     user.username = username;
@@ -33,5 +33,6 @@ export class AuthRepository extends Repository<User> {
     user.password = await hash(password, salt);
 
     await user.save();
+    return user;
   }
 }

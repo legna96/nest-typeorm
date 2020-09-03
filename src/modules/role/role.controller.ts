@@ -9,7 +9,9 @@ import {
   ParseIntPipe,
   UseGuards,
   Res,
-  HttpStatus
+  HttpStatus,
+  UsePipes,
+  ValidationPipe
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { RoleGuard } from './guards/role.guard';
@@ -18,6 +20,7 @@ import { Roles } from './decorators/role.decorator';
 import { RoleCreateJson, RoleUpdateJson } from './jsons';
 import { Configuration } from 'src/config/config.keys';
 import { Response } from 'express';
+import { RoleType } from './roletype.enum';
 
 @Controller('roles')
 export class RoleController {
@@ -29,8 +32,8 @@ export class RoleController {
     * @param res 
     */
   @Get(':id')
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getByIdRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response
@@ -48,8 +51,8 @@ export class RoleController {
    * @param res 
    */
   @Get('/:id/status/:status')
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getByIdRoleAndStatus(
     @Param('id', ParseIntPipe) id: number, 
     @Param('status') status: string,
@@ -65,8 +68,8 @@ export class RoleController {
    * @param res 
    */
   @Get()
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getAllRoles(@Res() res: Response) {
     const roles = await this._roleService.getAll(Configuration.ACTIVE);
     return res.status(HttpStatus.OK).json({
@@ -81,8 +84,8 @@ export class RoleController {
    * @param res 
    */
   @Get('/status/:status')
-  // @Roles('ADMINISTRATOR')
-  // @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async getAllRolesAndStatus(
     @Param('status') status: string,
     @Res() res: Response ) {
@@ -99,8 +102,9 @@ export class RoleController {
    * @param res 
    */
   @Post()
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UsePipes(ValidationPipe)
   async createRole(
     @Body() roleJson: RoleCreateJson,
     @Res() res: Response) {
@@ -118,8 +122,8 @@ export class RoleController {
    * @param res 
    */
   @Put(':id')
-  @Roles('ADMINISTRATOR')
-  @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async updateRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() roleJson: RoleUpdateJson,
@@ -135,8 +139,8 @@ export class RoleController {
    * @param id 
    */
   @Delete(':id')
-  // @Roles('ADMINISTRATOR')
-  // @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async deleteRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response ) {
@@ -152,8 +156,8 @@ export class RoleController {
    * @param id 
    */
   @Delete('/drop/:id')
-  // @Roles('ADMINISTRATOR')
-  // @UseGuards(AuthGuard(), RoleGuard)
+  @Roles(RoleType.ADMINISTRADOR)
+  @UseGuards(AuthGuard('jwt'), RoleGuard)
   async dropRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response) {
