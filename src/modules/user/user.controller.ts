@@ -14,7 +14,7 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserCreateJson } from './jsons/user.createJson';
+import { UserCreateJson, UserUpdateJson, EmailUpdateJson, RestartPasswordJson, ProfileUpdateJson } from './jsons';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../role/decorators/role.decorator';
 import { RoleGuard } from '../role/guards/role.guard';
@@ -30,29 +30,29 @@ export class UserController {
     * @param id 
     * @param res 
     */
-  @Get(':username')
+  @Get(':id')
   async getUserById (
-    @Param('username', ParseIntPipe) username: string,
+    @Param('id', ParseIntPipe) id: number,
     @Res() res: Response
     ) {
-    const user = await this._userService.get(username, Configuration.ACTIVE);
+    const user = await this._userService.get(id, Configuration.ACTIVE);
     return res.status(HttpStatus.OK).json({
       user
     });
   }
    
    /**
-    * obtiene usuario por username y status
-    * @param username 
+    * obtiene usuario por id y status
+    * @param id 
     * @param status 
     * @param res 
     */
-   @Get('/:username/status/:status')
+   @Get('/:id/status/:status')
    async getUserByIdAndStatus(
-     @Param('username') username: string, 
+     @Param('id', ParseIntPipe) id: number, 
      @Param('status') status: string,
      @Res() res: Response ) {
-       const user = await this._userService.get(username, status);
+       const user = await this._userService.get(id, status);
        return res.status(HttpStatus.OK).json({
          user
        });
@@ -105,6 +105,55 @@ export class UserController {
     }) 
   }
 
+  @Put(':id')
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() userUpdateJson: UserUpdateJson,
+    @Res() res: Response
+  ) {
+    const updateUser = await this._userService.update(userUpdateJson, id);
+    return res.status(HttpStatus.OK).json({
+      updateUser
+    })
+  }
+
+  @Put('/email/:id')
+  @UsePipes(ValidationPipe)
+  async updateUserEmail(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() emailUpdateJson: EmailUpdateJson,
+    @Res() res: Response
+  ) {
+    const updateUser = await this._userService.updateEmail(emailUpdateJson, id);
+    return res.status(HttpStatus.OK).json({
+      updateUser
+    })
+  }
+
+  @Put('/restart/password')
+  @UsePipes(ValidationPipe)
+  async restarPassword (
+    @Body() restartPasswordJson: RestartPasswordJson,
+    @Res() res: Response
+  ) {
+    const updateUser = await this._userService.restartPassword(restartPasswordJson);
+    return res.status(HttpStatus.OK).json({
+      updateUser
+    });
+  }
+  
+  @Put('/profile/:id')
+  async updateProfile (
+    @Param('id', ParseIntPipe) id: number,
+    @Body() profileUpdateJson: ProfileUpdateJson,
+    @Res() res: Response
+  ) {
+    const updateUser = await this._userService.updateProfile(profileUpdateJson, id);
+    return res.status(HttpStatus.OK).json({
+      updateUser
+    });
+  }
+
   // @Delete(':id')
   // async deleteUser(@Param('id', ParseIntPipe) id: number) {
   //   await this._userService.delete(id);
@@ -115,7 +164,23 @@ export class UserController {
   async setRoleToUser(
     @Param('userId', ParseIntPipe) userId: number,
     @Param('roleId', ParseIntPipe) roleId: number,
+    @Res () res: Response
   ) {
-    return this._userService.setRoleToUser(userId, roleId);
+    const updateUser = await this._userService.setRoleToUser(userId, roleId);
+    return res.status(HttpStatus.OK).json({
+      updateUser
+    })
+  }
+
+  @Post('unsetRole/:userId/:roleId')
+  async unsetRoleToUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('roleId', ParseIntPipe) roleId: number,
+    @Res () res: Response
+  ) {
+    const updateUser = await this._userService.unsetRoleToUser(userId, roleId);
+    return res.status(HttpStatus.OK).json({
+      updateUser
+    })
   }
 }

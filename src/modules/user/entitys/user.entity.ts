@@ -9,17 +9,21 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
   PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserDetails } from './user.details.entity';
 import { Role } from '../../role/role.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
+
+  @PrimaryGeneratedColumn('increment')
+  id: number;
   
-  @PrimaryColumn({ type: 'varchar', length: 25 })
+  @Column({ type: 'varchar', length: 25, unique: true })
   username: string;
 
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;
 
   @Column({ type: 'varchar', nullable: false })

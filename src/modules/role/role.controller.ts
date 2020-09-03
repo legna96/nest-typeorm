@@ -156,8 +156,8 @@ export class RoleController {
    * @param id 
    */
   @Delete('/drop/:id')
-  @Roles(RoleType.ADMINISTRADOR)
-  @UseGuards(AuthGuard(), RoleGuard)
+  // @Roles(RoleType.ADMINISTRADOR)
+  // @UseGuards(AuthGuard(), RoleGuard)
   async dropRole(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response) {

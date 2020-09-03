@@ -13,8 +13,7 @@ import { User } from '../user/entitys/user.entity';
 import { compare } from 'bcryptjs';
 import { IJwtPayload } from './jwt-payload.interface';
 import { RoleType } from '../role/roletype.enum';
-import { throwError } from 'rxjs';
-import { use } from 'passport';
+import { Configuration } from 'src/config/config.keys';
 
 @Injectable()
 export class AuthService {
@@ -73,7 +72,14 @@ export class AuthService {
       throw new UnauthorizedException('invalid credentials');
     }
 
+    // si las credenciales son las correctas y la cuenta esta inactiva, se reactiva la cuenta
+    if (user.status === Configuration.INACTIVE) {
+      user.status = Configuration.ACTIVE;
+      await this._authRepository.save(user);
+    }
+
     const payload: IJwtPayload = {
+      id: user.id,
       email: user.email,
       username: user.username,
       roles: user.roles.map(r => r.name as RoleType),
