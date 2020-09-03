@@ -78,7 +78,6 @@ export class UserController {
    * @param res 
    */
   @Get('/status/:status')
-  @UseGuards(AuthGuard(), RoleGuard)
   async getUsersByStatus(
     @Param('status') status: string,
     @Res() res: Response ) {

@@ -217,6 +217,7 @@ export class UserService {
     }
 
     await this._userRepository.delete(id);
+    await this._userDetailRepository.delete(id);
   }
 
   async setRoleToUser(userId: number, roleId: number): Promise<User> {
