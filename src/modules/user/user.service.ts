@@ -236,8 +236,8 @@ export class UserService {
       throw new NotFoundException('Role not exists');
     }
 
-    if (userExist.roles.includes(roleExist)) {
-      throw new ConflictException(`user has ${roleExist}`)
+    if (userExist.roles.map(r => r.name).includes(roleExist.name)) {
+      throw new ConflictException(`user has ${roleExist.name} role`)
     }
 
     userExist.roles.push(roleExist);
@@ -263,11 +263,11 @@ export class UserService {
       throw new NotFoundException('Role not exists');
     }
 
-    if (!userExist.roles.includes(roleExist)) {
-      throw new ConflictException(`user not has ${roleExist}`)
+    if (!userExist.roles.map(r => r.name).includes(roleExist.name)) {
+      throw new ConflictException(`user not has ${roleExist.name} role`)
     }
 
-    userExist.roles = userExist.roles.filter(role => role !== roleExist);
+    userExist.roles = userExist.roles.filter(role => role.name !== roleExist.name);
     await this._userRepository.save(userExist);
 
     return userExist;
